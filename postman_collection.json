@@ -1,0 +1,198 @@
+{
+  "info": {
+    "_postman_id": "gift-guide-generator-collection",
+    "name": "Gift Guide Generator API",
+    "description": "API collection for testing the Gift Guide Generator endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Generate Gift Guide - Nike",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"companyName\": \"Nike\",\n  \"domain\": \"nike.com\",\n  \"recipientEmail\": \"test@example.com\",\n  \"aeName\": \"Kevin Smith\",\n  \"aeEmail\": \"kevin@upmerch.com\",\n  \"aePhone\": \"+1-555-0100\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/generate-guide",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate-guide"]
+        },
+        "description": "Generate a branded gift guide PDF for Nike and email it to the specified recipient."
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Gift Guide - Apple",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"companyName\": \"Apple Inc.\",\n  \"domain\": \"apple.com\",\n  \"recipientEmail\": \"test@example.com\",\n  \"aeName\": \"Sarah Johnson\",\n  \"aeEmail\": \"sarah@upmerch.com\",\n  \"aePhone\": \"+1-555-0200\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/generate-guide",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate-guide"]
+        },
+        "description": "Generate a branded gift guide PDF for Apple and email it to the specified recipient."
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Gift Guide - Google",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"companyName\": \"Google\",\n  \"domain\": \"google.com\",\n  \"recipientEmail\": \"test@example.com\",\n  \"aeName\": \"Mike Thompson\",\n  \"aeEmail\": \"mike@upmerch.com\",\n  \"aePhone\": \"+1-555-0300\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/generate-guide",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate-guide"]
+        },
+        "description": "Generate a branded gift guide PDF for Google and email it to the specified recipient."
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Gift Guide - Spotify",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"companyName\": \"Spotify\",\n  \"domain\": \"spotify.com\",\n  \"recipientEmail\": \"test@example.com\",\n  \"aeName\": \"Emily Davis\",\n  \"aeEmail\": \"emily@upmerch.com\",\n  \"aePhone\": \"+1-555-0400\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/generate-guide",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate-guide"]
+        },
+        "description": "Generate a branded gift guide PDF for Spotify and email it to the specified recipient."
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Gift Guide - Invalid Request (Missing Fields)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"companyName\": \"Test Company\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/generate-guide",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate-guide"]
+        },
+        "description": "Test error handling with missing required fields. Expected: 400 error response."
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Gift Guide - Invalid Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"companyName\": \"Test Company\",\n  \"domain\": \"test.com\",\n  \"recipientEmail\": \"invalid-email\",\n  \"aeName\": \"Test AE\",\n  \"aeEmail\": \"test@upmerch.com\",\n  \"aePhone\": \"+1-555-0000\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/generate-guide",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate-guide"]
+        },
+        "description": "Test error handling with invalid email format. Expected: 400 error response."
+      },
+      "response": []
+    },
+    {
+      "name": "GET Request (Method Not Allowed)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/generate-guide",
+          "host": ["{{base_url}}"],
+          "path": ["api", "generate-guide"]
+        },
+        "description": "Test that GET requests are properly rejected. Expected: 405 Method Not Allowed."
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Response time is less than 60 seconds\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(60000);",
+          "});",
+          "",
+          "pm.test(\"Response has JSON body\", function () {",
+          "    pm.response.to.be.json;",
+          "});",
+          "",
+          "pm.test(\"Response has success field\", function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData).to.have.property('success');",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
