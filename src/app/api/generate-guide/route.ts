@@ -126,19 +126,13 @@ async function generatePDF(html: string): Promise<Buffer> {
   try {
     const executablePath = await getChromePath();
 
-    // Configure chromium for serverless
-    if (isVercel()) {
-      chromium.setHeadlessMode = true;
-      chromium.setGraphicsMode = false;
-    }
-
     browser = await puppeteer.launch({
       args: isVercel()
         ? chromium.args
         : ['--no-sandbox', '--disable-setuid-sandbox'],
-      defaultViewport: { width: 816, height: 1056 }, // Letter size at 96 DPI
+      defaultViewport: { width: 816, height: 1056 },
       executablePath,
-      headless: isVercel() ? chromium.headless : true,
+      headless: true,
     });
 
     console.log(`[${timestamp()}] Browser launched successfully`);
