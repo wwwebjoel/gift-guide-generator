@@ -73,38 +73,44 @@ function validateRequest(body: Partial<GenerateGuideRequest>): { isValid: boolea
 }
 
 /**
+ * Check if running on Vercel serverless
+ */
+function isVercel(): boolean {
+  return !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+}
+
+/**
  * Gets the Chrome executable path based on the environment
  * - Local Windows: Uses installed Chrome
  * - Serverless (Vercel): Uses @sparticuz/chromium
  */
-async function getChromePath(): Promise<string> {
-  const isLocal = process.env.NODE_ENV === 'development' || !process.env.VERCEL;
-
-  if (isLocal) {
-    // Common Chrome paths on Windows
-    const windowsPaths = [
-      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-      process.env.LOCALAPPDATA + '\\Google\\Chrome\\Application\\chrome.exe',
-    ];
-
-    // Check which path exists
-    const fs = await import('fs');
-    for (const chromePath of windowsPaths) {
-      if (chromePath && fs.existsSync(chromePath)) {
-        console.log(`[${timestamp()}] Using local Chrome: ${chromePath}`);
-        return chromePath;
-      }
-    }
-
-    // Fallback to chromium for non-Windows local dev
-    console.log(`[${timestamp()}] Local Chrome not found, trying @sparticuz/chromium`);
+async function getChromePath(): Promise<string | undefined> {
+  if (isVercel()) {
+    // On Vercel, use @sparticuz/chromium
+    const execPath = await chromium.executablePath(
+      'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar'
+    );
+    console.log(`[${timestamp()}] Using serverless chromium: ${execPath}`);
+    return execPath;
   }
 
-  // Use serverless chromium
-  const execPath = await chromium.executablePath();
-  console.log(`[${timestamp()}] Using serverless chromium: ${execPath}`);
-  return execPath;
+  // Local development - try to find Chrome
+  const windowsPaths = [
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    process.env.LOCALAPPDATA + '\\Google\\Chrome\\Application\\chrome.exe',
+  ];
+
+  const fs = await import('fs');
+  for (const chromePath of windowsPaths) {
+    if (chromePath && fs.existsSync(chromePath)) {
+      console.log(`[${timestamp()}] Using local Chrome: ${chromePath}`);
+      return chromePath;
+    }
+  }
+
+  console.log(`[${timestamp()}] No Chrome found, using chromium fallback`);
+  return undefined;
 }
 
 /**
@@ -119,15 +125,20 @@ async function generatePDF(html: string): Promise<Buffer> {
 
   try {
     const executablePath = await getChromePath();
-    const isLocal = process.env.NODE_ENV === 'development' || !process.env.VERCEL;
+
+    // Configure chromium for serverless
+    if (isVercel()) {
+      chromium.setHeadlessMode = true;
+      chromium.setGraphicsMode = false;
+    }
 
     browser = await puppeteer.launch({
-      args: isLocal
-        ? ['--no-sandbox', '--disable-setuid-sandbox']
-        : chromium.args,
+      args: isVercel()
+        ? chromium.args
+        : ['--no-sandbox', '--disable-setuid-sandbox'],
       defaultViewport: { width: 816, height: 1056 }, // Letter size at 96 DPI
       executablePath,
-      headless: true,
+      headless: isVercel() ? chromium.headless : true,
     });
 
     console.log(`[${timestamp()}] Browser launched successfully`);
